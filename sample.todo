@@ -1,0 +1,12 @@
+Create a flux compensator prototype
+
+Whatever text you want as a description.
+Will parse all lines.
+
+[[type todo]]
+[[status open]]
+[[created 2024-03-11]]
+[[due 2024-05-11]]
+[[tags tag1 tag2 tag3]]
+[[priority 1.5]]
+
