@@ -16,9 +16,9 @@ grv_str_t todo_create_id(void) {
     if (TODO_ID_TYPE == TODO_ID_TYPE_SIMPLE) {
         u8 vowls[5] = {'a','e','i','o','u'}; 
         for (size_t i = 0; i < TODO_ID_LENGTH; i+=2) {
-            char c1 = (grv_util_random_byte() % 21) + 'a';
+            char c1 = (grv_random_u8() % 21) + 'a';
             if (grv_str_contains_char(grv_str_ref("aeiou"), c1)) c1++;
-            char c2 = vowls[grv_util_random_byte() % 5];
+            char c2 = vowls[grv_random_u8() % 5];
             grv_str_append_char(&id_str, c1);
             grv_str_append_char(&id_str, c2);
         }
