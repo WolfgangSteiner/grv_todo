@@ -117,7 +117,13 @@ void cmd_remove(grv_strarr_t args) {
 int main(int argc, char** argv) {
     grv_strarr_t args = grv_strarr_new_from_cstrarr(argv, argc);
     exe_name = grv_fs_basename(grv_strarr_pop_front(&args));
-    grv_str_t cmd = args.size > 0 ? grv_strarr_pop_front(&args) : grv_str_ref("list");
+    
+    grv_str_t cmd = {0};
+    if (args.size == 0 || grv_str_starts_with_char(*grv_strarr_front(args), '-')) {
+        cmd = grv_str_ref("list");
+    } else {
+        cmd = grv_strarr_pop_front(&args);
+    }
 
     if (grv_str_eq(cmd, "list")) {
         cmd_list(args);
