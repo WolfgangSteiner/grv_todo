@@ -116,7 +116,7 @@ void cmd_remove(grv_strarr_t args) {
 
 int main(int argc, char** argv) {
     grv_strarr_t args = grv_strarr_new_from_cstrarr(argv, argc);
-    exe_name = grv_strarr_pop_front(&args);
+    exe_name = grv_fs_basename(grv_strarr_pop_front(&args));
     grv_str_t cmd = args.size > 0 ? grv_strarr_pop_front(&args) : grv_str_ref("list");
 
     if (grv_str_eq(cmd, "list")) {
