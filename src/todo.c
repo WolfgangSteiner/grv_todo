@@ -206,6 +206,20 @@ int todo_write(todo_t* todo) {
     return result;
 }
 
+bool todo_matches_template(todo_t* todo, todo_t* template) {
+    bool result = true;
+    if (!grv_str_empty(template->id)) {
+        result &= grv_str_starts_with_str(todo->id, template->id);
+    }
+    if (!grv_str_empty(template->status)) {
+        result &= grv_str_eq_str(todo->status, template->status);
+    }
+    if (!grv_str_empty(template->type)) {
+        result &= grv_str_eq_str(todo->type, template->type);
+    }
+    return result;
+}
+
 todoarr_t todoarr_select_by_status(todoarr_t arr, grv_str_t status) {
     todoarr_t res = {0};
     for (size_t i = 0; i < arr.size; ++i) {
@@ -213,6 +227,17 @@ todoarr_t todoarr_select_by_status(todoarr_t arr, grv_str_t status) {
         if (grv_str_eq(todo->status, status)) {
             grv_arr_push(&res, todo);
         }
+    }
+    return res;
+}
+
+todoarr_t todoarr_select_by_template(todoarr_t arr, todo_t template) {
+    todoarr_t res = {0};
+    for (size_t i = 0; i < arr.size; ++i) {
+         todo_t* todo = arr.arr[i];
+         if (todo_matches_template(todo, &template)) {
+            grv_arr_push(&res, todo);
+         }
     }
     return res;
 }
