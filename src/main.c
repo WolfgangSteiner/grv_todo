@@ -7,7 +7,6 @@
 
 static grv_str_t exe_name = {0};
 
-
 void list_todos(todoarr_t arr) {
     for (size_t i = 0; i < arr.size; ++i) {
         todo_t* todo = arr.arr[i];
@@ -58,8 +57,9 @@ void cmd_create(grv_strarr_t args) {
         grv_log_error(grv_str_ref("Could not write new todo"));
         exit(1);
     }
-    printf("Created issue: ");
-    
+    grv_str_t info_msg = todo_format_short(todo);
+    grv_str_prepend_cstr(&info_msg, "Created issue: ");
+    grv_log_info(info_msg);
 }
 
 void cmd_resolve(grv_strarr_t args) {
