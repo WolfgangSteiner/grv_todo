@@ -113,6 +113,25 @@ void cmd_remove(grv_strarr_t args) {
     }
 }
 
+void cmd_describe(grv_strarr_t args) {
+    if (!grv_path_exists(grv_str_ref(".jj")))  {
+        grv_log_error(grv_str_ref("Not a jujutsu repository, cannot jj describe."));
+        exit(1);
+    } else if (!grv_cmd_available(grv_str_ref("jj"))) {
+        grv_log_error(grv_str_ref("jujutsu executable not found, cannot jj describe."));
+        exit(1);
+    } else if (args.size != 1) {
+        grv_str_t error_msg = grv_str_format(grv_str_ref("Usage: {str} describe <id>"), exe_name);
+        grv_log_error(error_msg);
+        exit(1);
+    }
+
+    grv_str_t id_str = grv_strarr_pop_front(&args);
+    todoarr_t arr = todoarr_read(id_str);
+    todo_t* todo = arr.arr[0];
+    grv_str_t cmd = grv_str_format(grv_str_ref("jj desc -m \"{str}\""), todo->title);
+    grv_system(cmd);
+}
 
 int main(int argc, char** argv) {
     grv_strarr_t args = grv_strarr_new_from_cstrarr(argv, argc);
@@ -133,6 +152,8 @@ int main(int argc, char** argv) {
         cmd_resolve(args);
     } else if (grv_str_eq(cmd, "remove") || grv_str_eq(cmd, "rm")) {
         cmd_remove(args);
+    } else if (grv_str_eq(cmd, "describe") || grv_str_eq(cmd, "desc")) {
+        cmd_describe(args);
     }
 
     return 0;
