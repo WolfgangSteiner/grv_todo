@@ -197,7 +197,6 @@ int todo_write(todo_t* todo) {
     grv_str_t todo_path = todo_get_path();
     grv_str_t file_path = grv_str_format(grv_str_ref("{str}.todo"), todo->id);
     grv_path_prepend(&file_path, todo_path);
-    grv_log_info(grv_str_format(grv_str_ref("Writing todo to file {str}"), file_path));
     grv_str_t str = todo_serialize(todo);
     grv_error_t result = grv_str_write_to_file(str, file_path);
     grv_str_free(&todo_path);
