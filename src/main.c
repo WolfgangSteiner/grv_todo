@@ -6,7 +6,9 @@
 #include "grv/grv_util.h"
 #include "todo.h"
 
-static grv_str_t exe_name = {0};
+grv_str_t exe_name = {0};
+
+void cmd_edit(grv_strarr_t args);
 
 char* usage_update = "update <id> [--title=<new_title>] [--type=<new_type>]";
 
@@ -15,7 +17,6 @@ void print_usage(char* usage_cstr) {
     grv_str_append_cstr(&error_msg, usage_cstr);
     grv_log_error(error_msg);
 }
-
 
 todo_t* todo_get_with_id(grv_str_t id) {
     todoarr_t arr = todoarr_read(id);
@@ -280,6 +281,8 @@ int main(int argc, char** argv) {
         cmd_describe(args);
     } else if (grv_str_eq(cmd, "update") || grv_str_eq(cmd, "u")) {
         cmd_update(args);
+    } else if (grv_str_eq(cmd, "edit") || grv_str_eq(cmd, "e")) {
+        cmd_edit(args);
     } else if (grv_str_eq(cmd, "clean")) {
         cmd_clean(args);
     }

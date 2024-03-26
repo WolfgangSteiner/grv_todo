@@ -14,7 +14,11 @@ int main(int argc, char** argv) {
     if (config->tests_only) return result; 
 
     grvbld_target_t* todo = grvbld_target_create_executable("todo");
-    grvbld_target_add_src_files(todo, "src/main.c", "src/todo.c", NULL);
+    grvbld_target_add_src_files(todo,
+        "src/main.c",
+        "src/todo.c",
+        "src/cmd_edit.c",
+        NULL);
     grvbld_target_link(todo, libgrv);
     todo->run_after_build = true;
     result = grvbld_build_target(config, todo);
