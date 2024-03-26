@@ -16,14 +16,6 @@ void print_usage(char* usage_cstr) {
     grv_log_error(error_msg);
 }
 
-void list_todos(todoarr_t arr) {
-    for (size_t i = 0; i < arr.size; ++i) {
-        todo_t* todo = arr.arr[i];
-        grv_str_t display_str = todo_format_short(todo);
-        grv_str_print(display_str);
-        grv_str_free(&display_str);
-    }
-}
 
 todo_t* todo_get_with_id(grv_str_t id) {
     todoarr_t arr = todoarr_read(id);
@@ -34,7 +26,7 @@ todo_t* todo_get_with_id(grv_str_t id) {
     } else if (arr.size > 1) {
         grv_str_t error_msg = grv_str_ref("Id {str} is not unique:");
         grv_log_error(grv_str_format(error_msg, id));
-        list_todos(arr);
+        todoarr_list(arr);
         exit(1);
     }
 
@@ -63,7 +55,7 @@ void cmd_list(grv_strarr_t args) {
         arr = todoarr_select_by_status(arr, grv_str_ref("open"));
     }
     //grv_str_print(grv_str_ref("ID       Title"));
-    list_todos(arr);
+    todoarr_list(arr);
 }
 
 void cmd_create(grv_strarr_t args) {
@@ -105,7 +97,7 @@ void cmd_resolve(grv_strarr_t args) {
     } else if (arr.size > 1) {
         grv_str_t error_msg = grv_str_format(grv_str_ref("Multiple issues found for id {str}:"), id_str);
         grv_log_error(error_msg);
-        list_todos(arr);
+        todoarr_list(arr);
     } else {
         todo_t* todo = arr.arr[0];
         todo->status = grv_str_new("resolved");
@@ -129,12 +121,11 @@ void cmd_remove(grv_strarr_t args) {
         exit(1);
     } else {
         grv_str_print(grv_str_ref("The following items will be removed permanently:"));
-        list_todos(arr);
+        todoarr_list(arr);
         char choice = grv_query_user(grv_str_ref("Delete items?"), grv_str_ref("Yn"));
         if (choice == 'y') {
             for (size_t i = 0; i < arr.size; ++i) {
-                grv_str_t filepath = todo_file_path(arr.arr[i]);
-                grv_remove_file(filepath);
+                todo_remove_file(arr.arr[i]);
             }
         }
     }
@@ -251,6 +242,21 @@ void cmd_update(grv_strarr_t args) {
     }
 }
 
+void cmd_clean(grv_strarr_t args) {
+    todoarr_t arr = todoarr_read(grv_str_ref(""));
+    arr = todoarr_select_by_status(arr, grv_str_ref("resolved"));
+    if (arr.size > 0) {
+        grv_log_info(grv_str_ref("The following resolved issues will be permanently removed:"));
+        todoarr_list(arr);
+        char choice = grv_query_user(grv_str_ref("Remove resolved issues?"), grv_str_ref("Yn"));
+        if (choice == 'y') {
+            for (size_t i = 0; i < arr.size; ++i) {
+                todo_remove_file(arr.arr[i]);
+            }
+        }
+    }
+}
+
 int main(int argc, char** argv) {
     grv_strarr_t args = grv_strarr_new_from_cstrarr(argv, argc);
     exe_name = grv_fs_basename(grv_strarr_pop_front(&args));
@@ -274,6 +280,8 @@ int main(int argc, char** argv) {
         cmd_describe(args);
     } else if (grv_str_eq(cmd, "update") || grv_str_eq(cmd, "u")) {
         cmd_update(args);
+    } else if (grv_str_eq(cmd, "clean")) {
+        cmd_clean(args);
     }
 
     return 0;

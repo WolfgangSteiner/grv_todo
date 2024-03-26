@@ -42,6 +42,11 @@ todo_t* todo_create(grv_str_t title) {
     return todo;
 }
 
+void todo_remove_file(todo_t* todo) {
+    grv_str_t filepath = todo_file_path(todo);
+    grv_remove_file(filepath);
+}
+
 grv_str_t todo_format_short(todo_t* todo) {
     grv_str_t format_str = 
         grv_str_eq_cstr(todo->status, "open")
@@ -263,6 +268,14 @@ todoarr_t todoarr_read(grv_str_t id_prefix) {
             }
         }
     }
-
     return arr;
+}
+
+void todoarr_list(todoarr_t arr) {
+    for (size_t i = 0; i < arr.size; ++i) {
+        todo_t* todo = arr.arr[i];
+        grv_str_t display_str = todo_format_short(todo);
+        grv_str_print(display_str);
+        grv_str_free(&display_str);
+    }
 }
