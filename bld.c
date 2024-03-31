@@ -18,6 +18,7 @@ int main(int argc, char** argv) {
         "src/main.c",
         "src/todo.c",
         "src/cmd_edit.c",
+        "src/cmd_list.c",
         NULL);
     grvbld_target_link(todo, libgrv);
     todo->run_after_build = true;
