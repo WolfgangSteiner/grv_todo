@@ -48,13 +48,29 @@ void todo_remove_file(todo_t* todo) {
 }
 
 grv_str_t todo_format_short(todo_t* todo) {
-    grv_str_t format_str = 
-        grv_str_eq_cstr(todo->status, "open")
-            ? grv_str_ref("{str:color=yellow} {str}")
-            : grv_str_ref("{str:color=green} {str}");
-    grv_str_t id_str = grv_str_substr(todo->id, 0, 7);
+    grv_str_t format_str = grv_str_ref("{str} {str}");
+    grv_str_t id_str = todo_format_short_id(todo);
     grv_str_t res = grv_str_format(format_str, id_str, todo->title);
     grv_str_free(&id_str);
+    return res;
+}
+
+grv_str_t todo_format_short_id(todo_t* todo) {
+    grv_str_t format_str = 
+        grv_str_eq_cstr(todo->status, "open")
+            ? grv_str_ref("{str:color=yellow}")
+            : grv_str_ref("{str:color=green}");
+    grv_str_t id_str = grv_str_substr(todo->id, 0, 7);
+    grv_str_t res = grv_str_format(format_str, id_str);
+    return res;
+}
+
+grv_str_t todo_format_id(todo_t* todo) {
+    grv_str_t format_str = 
+        grv_str_eq_cstr(todo->status, "open")
+            ? grv_str_ref("{str:color=yellow}")
+            : grv_str_ref("{str:color=green}");
+    grv_str_t res = grv_str_format(format_str, todo->id, todo->title);
     return res;
 }
 
@@ -169,6 +185,20 @@ grv_str_t todo_id_from_filename(grv_str_t filename) {
     return id_str;
 }
 
+void todo_print(todo_t* todo) {
+    grv_str_t id_str = todo_format_id(todo);
+    grv_str_t heading_fmt = grv_str_ref("{str} {str}");
+    grv_str_t sub_heading_fmt = grv_str_ref("type:{str} status:{str} created:{str}");
+    grv_str_t heading = grv_str_format(heading_fmt, id_str, todo->title);
+    grv_str_t sub_heading = grv_str_format(sub_heading_fmt, todo->type, todo->status, todo->created);
+    grv_str_print(heading);
+    grv_str_print(sub_heading);
+    if (!grv_str_empty(todo->description)) grv_str_print(todo->description);
+    grv_str_free(&id_str);
+    grv_str_free(&heading);
+    grv_str_free(&sub_heading);
+}
+
 todo_return_t todo_load(grv_str_t filename) {
     todo_return_t result = {0};
     grv_str_return_t str_return = grv_read_file(filename);
@@ -278,4 +308,13 @@ void todoarr_list(todoarr_t arr) {
         grv_str_print(display_str);
         grv_str_free(&display_str);
     }
+}
+
+bool todo_id_valid(grv_str_t id_str) {
+    if (!grv_str_is_valid(id_str)) return false;
+    for (int i = 0; i < id_str.size; ++i) {
+        char c = id_str.data[i];
+        if (!grv_char_is_lower(c) && !grv_is_digit(c)) return false;
+    }
+    return true;
 }
