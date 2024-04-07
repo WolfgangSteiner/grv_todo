@@ -1,4 +1,8 @@
 sort issues by created
+
+- The issues in the list shall be sorted by the created date.
+- Newest items shall be listed last.
+
 [[type todo]]
 [[status open]]
 [[created 20240323T160950]]
