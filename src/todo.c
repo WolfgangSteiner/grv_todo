@@ -42,6 +42,11 @@ todo_t* todo_create(grv_str_t title) {
     return todo;
 }
 
+void todo_resolve(todo_t* todo) {
+    todo->status = grv_str_ref("resolved");
+    todo->resolved = grv_local_datetime_str();
+}
+
 void todo_remove_file(todo_t* todo) {
     grv_str_t filepath = todo_file_path(todo);
     grv_remove_file(filepath);
@@ -96,6 +101,7 @@ grv_str_t todo_serialize(todo_t* todo) {
     append_field(&res, "type", todo->type);
     append_field(&res, "status", todo->status);
     append_field(&res, "created", todo->created);
+    append_field(&res, "resolved", todo->resolved);
     append_field(&res, "due", todo->due);
     if (todo->tags.size) {
         grv_str_t tags_str = grv_strarr_join(todo->tags, grv_str_ref(" "));
@@ -132,6 +138,8 @@ int todo_parse_field(todo_t* todo, grv_str_t line) {
         todo->status = value;
     } else if (grv_str_eq_cstr(key, "created")) {
         todo->created = value;
+    } else if (grv_str_eq_cstr(key, "resolved")) {
+        todo->resolved = value;
     } else if (grv_str_eq_cstr(key, "due")) {
         todo->due = value;
     } else if (grv_str_eq_cstr(key, "tags")) {
@@ -191,6 +199,10 @@ void todo_print(todo_t* todo) {
     grv_str_t sub_heading_fmt = grv_str_ref("type:{str} status:{str} created:{str}");
     grv_str_t heading = grv_str_format(heading_fmt, id_str, todo->title);
     grv_str_t sub_heading = grv_str_format(sub_heading_fmt, todo->type, todo->status, todo->created);
+    if (!grv_str_empty(todo->resolved)) {
+        grv_str_append_cstr(&sub_heading, " resolved:");
+        grv_str_append_str(&sub_heading, todo->resolved);
+    }
     grv_str_print(heading);
     grv_str_print(sub_heading);
     if (!grv_str_empty(todo->description)) grv_str_print(todo->description);

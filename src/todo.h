@@ -10,6 +10,7 @@ typedef struct {
     grv_str_t type;
     grv_str_t status;
     grv_str_t created;
+    grv_str_t resolved;
     grv_str_t due;
     grv_strarr_t tags;
     f32 priority;
@@ -33,6 +34,7 @@ grv_str_t todo_format_short(todo_t* todo);
 grv_str_t todo_format_id(todo_t* todo);
 grv_str_t todo_format_short_id(todo_t* todo);
 todo_t* todo_create(grv_str_t title);
+void todo_resolve(todo_t* todo);
 void todo_remove_file(todo_t* todo);
 
 grv_str_t todo_serialize(todo_t* todo);

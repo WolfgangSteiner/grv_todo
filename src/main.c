@@ -10,6 +10,7 @@ grv_str_t exe_name = {0};
 
 void cmd_edit(grv_strarr_t args);
 void cmd_list(grv_strarr_t args);
+void cmd_resolve(grv_strarr_t args);
 
 char* usage_update = "update <id> [--title=<new_title>] [--type=<new_type>]";
 
@@ -59,33 +60,6 @@ void cmd_create(grv_strarr_t args) {
     grv_str_t info_msg = todo_format_short(todo);
     grv_str_prepend_cstr(&info_msg, "Created issue: ");
     grv_log_info(info_msg);
-}
-
-void cmd_resolve(grv_strarr_t args) {
-    if (args.size == 0) {
-        printf("Usage: %s resolve <id>\n", grv_str_cstr(exe_name));
-        exit(1);
-    }
-
-    grv_str_t id_str = *grv_strarr_front(args);
-    todoarr_t arr = todoarr_read(id_str);
-    arr = todoarr_select_by_status(arr, grv_str_ref("open"));
-    if (arr.size == 0) {
-        grv_str_t error_msg = grv_str_format(grv_str_ref("No issues found for id {str}."), id_str);
-        grv_log_error(error_msg);
-        exit(1);
-    } else if (arr.size > 1) {
-        grv_str_t error_msg = grv_str_format(grv_str_ref("Multiple issues found for id {str}:"), id_str);
-        grv_log_error(error_msg);
-        todoarr_list(arr);
-    } else {
-        todo_t* todo = arr.arr[0];
-        todo->status = grv_str_new("resolved");
-        todo_write(todo);
-        grv_str_t info_msg = todo_format_short(todo);
-        grv_str_prepend_cstr(&info_msg, "Resolved issue: ");
-        grv_log_info(info_msg);
-    }
 }
 
 void cmd_remove(grv_strarr_t args) {
