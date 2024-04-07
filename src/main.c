@@ -213,7 +213,7 @@ void cmd_clean(grv_strarr_t args) {
 
 int main(int argc, char** argv) {
     grv_strarr_t args = grv_strarr_new_from_cstrarr(argv, argc);
-    exe_name = grv_fs_basename(grv_strarr_pop_front(&args));
+    exe_name = grv_path_basename(grv_strarr_pop_front(&args));
     
     grv_str_t cmd = {0};
     if (args.size == 0 || grv_str_starts_with_char(*grv_strarr_front(args), '-')) {

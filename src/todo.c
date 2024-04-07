@@ -189,7 +189,7 @@ todo_t* todo_deserialize(grv_str_t str) {
 }
 
 grv_str_t todo_id_from_filename(grv_str_t filename) {
-    grv_str_t id_str = grv_fs_stem(grv_fs_basename(filename));
+    grv_str_t id_str = grv_path_stem(grv_path_basename(filename));
     return id_str;
 }
 
